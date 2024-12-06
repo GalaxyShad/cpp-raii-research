@@ -1,7 +1,3 @@
-//
-// Created by Вадим Кадырин on 27.11.2024.
-//
-
 #ifndef CPP_RAII_RESEARCH_SQUAREMATRIX_H
 #define CPP_RAII_RESEARCH_SQUAREMATRIX_H
 
@@ -24,9 +20,20 @@ public:
 
     void set(int x, int y, int value);
 
-    int get(int x, int y);
+    [[nodiscard]] int get(int x, int y) const;
 
+    SquareMatrix& operator=(const SquareMatrix &other);
 
+    // Move assignment operator
+    SquareMatrix& operator=(SquareMatrix &&other) noexcept;
+
+    bool operator<(const SquareMatrix &other) const {
+        return size_ < other.size_;
+    }
+
+    bool operator>(const SquareMatrix &other) const {
+        return size_ > other.size_;
+    }
 private:
     int size_{};
     std::string name_;
@@ -34,7 +41,7 @@ private:
 
     std::basic_ostream<char> &log();
 
-    static void print_value_list_to_ostream(std::basic_ostream<char> &s, SquareMatrix &m);
+    static void print_value_list_to_ostream(std::basic_ostream<char> &s, const SquareMatrix &m);
 };
 
 

@@ -77,13 +77,16 @@ void SquareMatrix::set(int x, int y, int value) {
     log() << "[method set] [m(x, y) = value] m(" << x << "," << y << ") set to = " << value << "\n";
 }
 
-int SquareMatrix::get(int x, int y) {
+int SquareMatrix::get(int x, int y) const {
     return value_list_[y * size_ + x];
 }
 
 // ====== PRIVATE ========= //
 
 std::basic_ostream<char> &SquareMatrix::log() {
+    static std::basic_ostream<char> null_stream(nullptr);
+    return null_stream;
+
     return std::cout << "[SquareMatrix] instance_id=" << this
                      << "; name=" << name_
                      << "; sizeof(instance)=" << sizeof(*this)
@@ -92,7 +95,7 @@ std::basic_ostream<char> &SquareMatrix::log() {
                      << " | ";
 }
 
-void SquareMatrix::print_value_list_to_ostream(std::basic_ostream<char> &s, SquareMatrix &m) {
+void SquareMatrix::print_value_list_to_ostream(std::basic_ostream<char> &s, const SquareMatrix &m) {
     s << "id = " << &m
       << "; name = " << m.name_
       << "; size = " << m.size_ << "x" << m.size_
@@ -105,4 +108,43 @@ void SquareMatrix::print_value_list_to_ostream(std::basic_ostream<char> &s, Squa
 
         s << std::endl;
     }
+}
+SquareMatrix &SquareMatrix::operator=(const SquareMatrix &other) {
+    if (this == &other) {
+        log() << "[Copy assignment] Self-assignment detected\n";
+        return *this;
+    }
+
+    delete[] value_list_;
+
+    size_ = other.size_;
+    name_ = other.name_;
+    value_list_ = new int[size_ * size_];
+
+    std::copy(other.value_list_, other.value_list_ + size_ * size_, value_list_);
+
+    log() << "[Copy assignment] matrix copied... \n";
+    log() << "from ";
+    print_value_list_to_ostream(log(), other);
+    log() << "to ME ";
+    print_value_list_to_ostream(log(), *this);
+    log() << "\n";
+
+    return *this;
+}
+SquareMatrix &SquareMatrix::operator=(SquareMatrix &&other) noexcept {
+    if (this == &other) {
+        log() << "[Move assignment] Self-assignment detected\n";
+        return *this;
+    }
+
+    delete[] value_list_;
+
+    size_ = std::exchange(other.size_, 0);
+    name_ = std::move(other.name_);
+    value_list_ = std::exchange(other.value_list_, nullptr);
+
+    log() << "[Move assignment] matrix data moved from " << &other << " to " << this << "\n";
+
+    return *this;
 }
