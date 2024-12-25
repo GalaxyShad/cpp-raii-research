@@ -68,7 +68,7 @@ namespace class_function_transfer_and_return_tests {
 
         m2x2.print_to_stream(std::cout);
 
-        return m2x2;
+        // return m2x2;
     }
 
     void display_to_stdio_ref(SquareMatrix& m) {
